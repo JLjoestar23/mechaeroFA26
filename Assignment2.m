@@ -14,8 +14,21 @@ M = [m  0;
 K = [k1+k2          -k1*L1+k2*L2; 
      -k1*L1+k2*L2   k1*L1^2+k2*L2^2];
 
-% solve generalized eigenvalue problem
-[U_mode, wn_sq] = eig(K, M);
+% defin sqrt matrix
+M_sqrt = sqrt(M);
+
+% inv(M_sqrt)*K*inv(M_sqrt) guarantees K_t to be symmetric
+% results in I*\ddot{x} + K_t*x = 0
+K_t = (M_sqrt\K)/M_sqrt;
+
+% solve for normalized, orthogonal eigenvectors of K_t
+[U_t, ~] = eig(K_t);
+
+% diagonalize K_t with its eigenvectors to solve for wn_sq
+wn_sq = U_t'*K_t*U_t;
+
+% transform eigenvectors back to physical coordinates
+U_mode = M_sqrt\U_t;
 
 U1 = U_mode(:,1);
 U2 = U_mode(:,2);
