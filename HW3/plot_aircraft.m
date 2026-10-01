@@ -5,58 +5,77 @@ function plot_aircraft(t, X)
     vy = X(:,4);
     V  = sqrt(vx.^2 + vy.^2);
     
-    set(0, 'DefaultAxesFontSize', 12, 'DefaultAxesFontName', 'Helvetica', ...
-           'DefaultLineLineWidth', 1.8, 'DefaultAxesBox', 'on', ...
-           'DefaultAxesLineWidth', 1.0, 'DefaultAxesTickLength', [0.008 0.008]);
+    % set(0, 'DefaultAxesFontSize', 12, 'DefaultAxesFontName', 'Helvetica', ...
+    %        'DefaultLineLineWidth', 1.8, 'DefaultAxesBox', 'on', ...
+    %        'DefaultAxesLineWidth', 1.0, 'DefaultAxesTickLength', [0.008 0.008]);
      
     navy   = [0.00 0.20 0.45];
     orange = [0.85 0.40 0.05];
     green  = [0.10 0.55 0.30];
-    grey   = [0.45 0.45 0.45];
+    % grey   = [0.45 0.45 0.45];
      
     % Figure 1: Flight path (y vs x)
-    figure('Color','w','Position',[100 100 850 450]);
+    figure('Color','w');
     plot(x/1000, y, 'Color', navy);
     grid on; grid minor;
+    set_ylim_padded(y);
     xlabel('Horizontal Distance, x (km)');
     ylabel('Altitude Change, y (m)');
     title('X-Y Flight Path');
-    % ylim_pad = max(5, 0.1*max(abs(y))+1);
-    % ylim([-ylim_pad, ylim_pad]);
-    set(gca,'GridAlpha',0.15,'MinorGridAlpha',0.08);
      
     % Figure 2: Velocity components vs time
-    figure('Color','w','Position',[100 100 900 600]);
+    figure('Color','w');
      
     subplot(3,1,1);
-    plot(t, vx, 'Color', navy); grid on; grid minor;
+    plot(t, vx, 'Color', navy);
+    grid on; grid minor;
+    set_ylim_padded(vx);
     ylabel('v_x (m/s)');
     title('Velocity Components vs. Time');
-    set(gca,'GridAlpha',0.15,'MinorGridAlpha',0.08);
-     
+    
     subplot(3,1,2);
-    plot(t, vy, 'Color', orange); grid on; grid minor;
+    plot(t, vy, 'Color', orange);
+    grid on; grid minor;
+    set_ylim_padded(vy);
     ylabel('v_y (m/s)');
-    set(gca,'GridAlpha',0.15,'MinorGridAlpha',0.08);
      
     subplot(3,1,3);
-    plot(t, V, 'Color', green); grid on; grid minor;
+    plot(t, V, 'Color', green);
+    grid on; grid minor;
+    set_ylim_padded(V)
     ylabel('|V| (m/s)');
     xlabel('Time (s)');
-    set(gca,'GridAlpha',0.15,'MinorGridAlpha',0.08);
-     
+
     % Figure 3: Position components vs time
-    figure('Color','w','Position',[100 100 900 450]);
+    figure('Color','w');
      
     subplot(2,1,1);
-    plot(t, x/1000, 'Color', navy); grid on; grid minor;
+    plot(t, x/1000, 'Color', navy);
+    grid on; grid minor;
+    set_ylim_padded(x/1000);
     ylabel('x (km)');
     title('Position Components vs. Time');
-    set(gca,'GridAlpha',0.15,'MinorGridAlpha',0.08);
      
     subplot(2,1,2);
-    plot(t, y, 'Color', orange); grid on; grid minor;
+    plot(t, y, 'Color', orange);
+    grid on; grid minor;
+    set_ylim_padded(y)
     ylabel('y (m)');
     xlabel('Time (s)');
-    set(gca,'GridAlpha',0.15,'MinorGridAlpha',0.08);
+end
+
+function set_ylim_padded(data, pad_frac)
+    if nargin < 2
+        pad_frac = 0.1;  % 10% of the data's range, a reasonable default
+    end
+    lo = min(data);
+    hi = max(data);
+    range = hi - lo;
+    if range == 0
+        % constant signal (e.g. all zeros) — pad by an absolute amount instead
+        pad = max(abs(hi), 1) * 0.1;
+    else
+        pad = range * pad_frac;
+    end
+    ylim([lo - pad, hi + pad]);
 end

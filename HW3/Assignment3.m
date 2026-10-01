@@ -69,7 +69,7 @@ phi2 = atan2(-s2, wd2);
 a1 = q0(1)/cos(phi1);
 a2 = q0(2)/cos(phi2);
 
-t_a = linspace(0,20,500);
+t_a = linspace(0, 20, 500);
 
 X_a = a1*U_mode(:,1)*exp(-s1*t_a).*cos(wd1*t_a + phi1) ... 
       + a2*U_mode(:,2)*exp(-s2*t_a).*cos(wd2*t_a + phi2);
@@ -107,27 +107,26 @@ end
 [t_n, X_n] = ode45(@(t, X) sus_damped(t, X), tspan, [x0; 0; 0]);
 
 % plotting
-figure;
 navy   = [0.00 0.20 0.45];
 orange = [0.85 0.40 0.05];
 figure('Color','w');
 sgtitle('Comparing Analytical and Numerical Solutions')
 
-ax1 = subplot(2,1,1);
-h1 = plot(t_a, X_a(1,:), 'Color', navy, 'LineWidth', 2);
+subplot(2,1,1);
+plot(t_a, X_a(1,:), 'Color', navy, 'LineWidth', 2, 'DisplayName', 'Analytical');
 hold on;
-h2 = plot(t_n, X_n(:,1), '--', 'Color', orange, 'LineWidth', 2);
+plot(t_n, X_n(:,1), '--', 'Color', orange, 'LineWidth', 2, 'DisplayName', 'Numerical');
 grid on;
 xlabel('Time (s)');
 ylabel('Vertical Displacement');
 ylim([min(X_n(:,1))*1.2, max(X_n(:,1))*1.2]);
-legend([h1, h2], {'Analytical', 'Numerical'});
+legend();
 hold off;
 
-ax2 = subplot(2,1,2);
-h3 = plot(t_a, X_a(2,:), 'Color', navy, 'LineWidth', 2);
+subplot(2,1,2);
+plot(t_a, X_a(2,:), 'Color', navy, 'LineWidth', 2);
 hold on;
-h4 = plot(t_n, X_n(:,2), '--', 'Color', orange, 'LineWidth', 2);
+plot(t_n, X_n(:,2), '--', 'Color', orange, 'LineWidth', 2);
 grid on;
 xlabel('Time (s)');
 ylabel('Angular Displacement');
@@ -191,31 +190,30 @@ end
 [t_n, X_n] = ode45(@(t, X) sus_damped_harmonic(t, X), tspan, [0; 0; 0; 0]);
 
 % plotting
-figure;
 navy   = [0.00 0.20 0.45];
 orange = [0.85 0.40 0.05];
 figure('Color','w');
 sgtitle('Comparing Analytical and Numerical Solutions')
 
-ax1 = subplot(2,1,1);
-h1 = plot(t_a, X_p(1,:), 'Color', navy, 'LineWidth', 2);
+subplot(2,1,1);
+plot(t_a, X_p(1,:), 'Color', navy, 'LineWidth', 2, 'DisplayName', 'Analytical Steady State');
 hold on;
-h2 = plot(t_n, X_n(:,1), '--', 'Color', orange, 'LineWidth', 2);
+plot(t_n, X_n(:,1), '--', 'Color', orange, 'LineWidth', 2, 'DisplayName', 'Numerical');
 grid on;
 xlabel('Time (s)');
 ylabel('Vertical Displacement');
-ylim([min(X_n(:,1))*1.5, max(X_n(:,1))*1.5]);
-legend([h1, h2], {'Analytical Steady State', 'Numerical'});
+ylim([min(X_n(:,1))*2, max(X_n(:,1))*2]);
+legend();
 hold off;
 
-ax2 = subplot(2,1,2);
-h3 = plot(t_a, X_p(2,:), 'Color', navy, 'LineWidth', 2);
+subplot(2,1,2);
+plot(t_a, X_p(2,:), 'Color', navy, 'LineWidth', 2);
 hold on;
-h4 = plot(t_n, X_n(:,2), '--', 'Color', orange, 'LineWidth', 2);
+plot(t_n, X_n(:,2), '--', 'Color', orange, 'LineWidth', 2);
 grid on;
 xlabel('Time (s)');
 ylabel('Angular Displacement');
-ylim([min(X_n(:,2))*1.5, max(X_n(:,2))*1.5]);
+ylim([min(X_n(:,2))*2, max(X_n(:,2))*2]);
 hold off;
 
 %%
