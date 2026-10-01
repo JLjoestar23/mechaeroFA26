@@ -6,22 +6,24 @@ function dXdt = simple_aircraft_loop(t, X, u, system_params)
     rho = system_params.rho; % kg/m^3
     m = system_params.m; % kg
     g = system_params.g; % m/s^2
-    
+
     % system inputs
     T = u(1); % thrust input
     % a = u(2); % AoA input
-    
-    R = 70; % m
-    a = (2/(rho*kL*Aw)) * (m/R + (m*g*cos()))
-    
+
     % system states
     x = X(1); % x-pos
     y = X(2); % y-pos
     dx = X(3); % x-vel
     dy = X(4); % y-vel
-    
-    theta_v = atan2(dy, dx); % velocity vector angle
     V = sqrt(dx^2 + dy^2); % speed
+    theta_v = atan2(dy, dx); % velocity vector angle
+
+    R = 70; % m
+    % angular position around the loop
+    theta_loop = atan2(y-R, x) + pi/2;
+    a = (2/(rho*kL*Aw)) * (m/R + (m*g*cos(theta_loop))/V^2);
+
     Cl = kL*a; % lift coefficient
     Cd = kDO + kDI*a^2; % drag coefficient
     

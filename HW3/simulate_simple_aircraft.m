@@ -11,16 +11,16 @@ system_params.g = 9.81; % m/s^2
 R = 70; % m
 
 % initial 
-V_steady = 60; % m/s
+V_steady = 40; % m/s
 
 T = 3400; % N
 a = deg2rad(5); % deg -> rad
 u = [T, a]; % thrust and AoA input
 
-tspan = [0 300];
+tspan = [0 10];
 X0 = [0; 0; 60; 0];
 options = odeset('AbsTol', 1e-9);
-[t, X] = ode45(@(t, X) simple_aircraft(t, X, u, system_params), tspan, X0, options);
+[t, X] = ode45(@(t, X) simple_aircraft_loop(t, X, u, system_params), tspan, X0, options);
 
 %% Plotting
 plot_aircraft(t, X);
