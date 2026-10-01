@@ -218,3 +218,4 @@ ylabel('Angular Displacement');
 ylim([min(X_n(:,2))*1.5, max(X_n(:,2))*1.5]);
 hold off;
 
+%%
