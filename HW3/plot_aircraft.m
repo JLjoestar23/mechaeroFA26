@@ -19,8 +19,8 @@ function plot_aircraft(t, X)
     plot(x/1000, y, 'Color', navy, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(y);
-    xlabel('Horizontal Distance, x (km)');
-    ylabel('Altitude Change, y (m)');
+    xlabel('Horizontal Displacement, x (km)');
+    ylabel('Altitude, y (m)');
     title('X-Y Flight Path');
      
     % Figure 2: Velocity components vs time

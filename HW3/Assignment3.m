@@ -216,4 +216,123 @@ ylabel('Angular Displacement');
 ylim([min(X_n(:,2))*2, max(X_n(:,2))*2]);
 hold off;
 
-%%
+%% Problem 2
+
+system_params.Aw = 24.0; % m^2
+system_params.kL = 0.1 * 180/pi; % 1/rad
+system_params.kDO = 0.03; % unitless
+system_params.kDI = 0.001 * (180/pi)^2; % 1/rad^2
+system_params.rho = 1.225; % kg/m^3
+system_params.m = 1134; % kg
+system_params.g = 9.81; % m/s^2
+
+% c) circular-loop simulation
+
+T = 1881.157; % N
+a = deg2rad(2); % deg -> rad
+u = [T, a]; % thrust and AoA input
+
+% Phase 1: simulate level-flight
+options = odeset('AbsTol', 1e-9, 'MaxStep', 1e-3);
+
+tspan = [0 2];
+X0 = [0; 0; 61.331; 0];
+[t1, X1] = ode45(@(t, X) simple_aircraft(t, X, u, system_params), tspan, X0, options);
+
+% Phase 2: simulate circular loop flight
+X0 = X1(end, :);
+system_params.prev_X0 = X0;
+tspan = [0 10];
+[t2, X2] = ode45(@(t, X) simple_aircraft_loop(t, X, u, system_params), tspan, X0, options);
+
+% estimate loop completion time
+mask = (abs(X2(:,1) - X0(1)) < 1e-2) & (t2 > 5);
+t_loop_done = min(t2(mask));
+
+% trim t2 and X2 to only include the loop time interval
+t2 = t2(t2<=t_loop_done);
+X2 = X2(t2<=t_loop_done, :);
+
+% Phase 3: simulate post-loop level-flight
+X0 = X2(t2==t_loop_done, :);
+tspan = [0 2];
+[t3, X3] = ode45(@(t, X) simple_aircraft(t, X, u, system_params), tspan, X0, options);
+
+t_total_1 = [t1; t2+t1(end); t3+t2(end)+t1(end)];
+X_total_1 = [X1; X2; X3];
+
+% Plotting
+plot_aircraft(t_total_1, X_total_1);
+
+% commanded AoA over time
+V = sqrt(X2(:,3).^2 + X2(:,4).^2);
+theta_loop = atan2(X2(:,4), X2(:,3));
+AoA = (2/(system_params.rho * system_params.kL * system_params.Aw)) * ...
+      (system_params.m/70 + (system_params.m*system_params.g*cos(theta_loop)) ./ V.^2);
+
+AoA_complete = [2*ones(length(t1), 1); rad2deg(AoA); 2*ones(length(t3), 1)];
+
+figure('Color','w');
+plot(t_total_1, AoA_complete, 'LineWidth', 2);
+grid on; grid minor;
+set_ylim_padded(AoA_complete);
+xlabel('Time (s)');
+ylabel('Commanded AoA (deg)');
+title('Commanded AoA vs. Time');
+
+%% d) Constant AoA Loop
+
+T = 1881.157; % N
+a = deg2rad(2); % deg -> rad
+u = [T, a]; % thrust and AoA input
+
+% Phase 1: simulate level-flight
+options = odeset('AbsTol', 1e-9, 'MaxStep', 1e-3);
+
+tspan = [0 2];
+X0 = [0; 0; 61.331; 0];
+[t1, X1] = ode45(@(t, X) simple_aircraft(t, X, u, system_params), tspan, X0, options);
+
+% Phase 2: simulate circular loop flight w/ constant AoA
+a = deg2rad(10.75);
+u = [T, a];
+X0 = X1(end, :);
+system_params.prev_X0 = X0;
+tspan = [0 15];
+[t_aoa, X_aoa] = ode45(@(t, X) simple_aircraft_loop_const_AoA(t, X, u, system_params), tspan, X0, options);
+
+% estimate completion of the constant-AoA loop
+mask = (abs(X_aoa(:,3) - X0(3)) < 1e-2) & (abs(X_aoa(:,4) - X0(4)) < 1e-2) & (t_aoa > 5);
+t_loop_done = min(t_aoa(mask));
+
+% trim t2 and X2 to only include the loop time interval
+t_aoa = t_aoa(t_aoa<=t_loop_done);
+X_aoa = X_aoa(t_aoa<=t_loop_done, :);
+
+% Phase 3: simulate post-loop level-flight
+a = deg2rad(2);
+u = [T, a];
+X0 = X_aoa(t_aoa==t_loop_done, :);
+tspan = [0 2];
+[t3, X3] = ode45(@(t, X) simple_aircraft(t, X, u, system_params), tspan, X0, options);
+
+t_total_2 = [t1; t_aoa+t1(end); t3+t_aoa(end)+t1(end)];
+X_total_2 = [X1; X_aoa; X3];
+
+% Plotting
+plot_aircraft(t_total_2, X_total_2);
+
+%% Plot both
+
+figure('Color', 'w');
+plot(X_total_1(:, 1), X_total_1(:, 2), 'LineWidth', 2, 'DisplayName', 'Controlled AoA');
+hold on;
+plot(X_total_2(:, 1), X_total_2(:, 2), '--', 'LineWidth', 2, 'DisplayName', 'Constant AoA');
+xlabel('Horizontal Displacement, x (km)');
+ylabel('Altitude, y (m)');
+title('Comparing Loop Trajectories')
+legend();
+grid on; grid minor;
+axis equal;
+hold off;
+
