@@ -16,7 +16,7 @@ function plot_aircraft(t, X)
      
     % Figure 1: Flight path (y vs x)
     figure('Color','w');
-    plot(x/1000, y, 'Color', navy);
+    plot(x/1000, y, 'Color', navy, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(y);
     xlabel('Horizontal Distance, x (km)');
@@ -27,20 +27,20 @@ function plot_aircraft(t, X)
     figure('Color','w');
      
     subplot(3,1,1);
-    plot(t, vx, 'Color', navy);
+    plot(t, vx, 'Color', navy, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(vx);
     ylabel('v_x (m/s)');
     title('Velocity Components vs. Time');
     
     subplot(3,1,2);
-    plot(t, vy, 'Color', orange);
+    plot(t, vy, 'Color', orange, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(vy);
     ylabel('v_y (m/s)');
      
     subplot(3,1,3);
-    plot(t, V, 'Color', green);
+    plot(t, V, 'Color', green, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(V)
     ylabel('|V| (m/s)');
@@ -50,32 +50,16 @@ function plot_aircraft(t, X)
     figure('Color','w');
      
     subplot(2,1,1);
-    plot(t, x/1000, 'Color', navy);
+    plot(t, x/1000, 'Color', navy, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(x/1000);
     ylabel('x (km)');
     title('Position Components vs. Time');
      
     subplot(2,1,2);
-    plot(t, y, 'Color', orange);
+    plot(t, y, 'Color', orange, 'LineWidth', 2);
     grid on; grid minor;
     set_ylim_padded(y)
     ylabel('y (m)');
     xlabel('Time (s)');
-end
-
-function set_ylim_padded(data, pad_frac)
-    if nargin < 2
-        pad_frac = 0.1;  % 10% of the data's range, a reasonable default
-    end
-    lo = min(data);
-    hi = max(data);
-    range = hi - lo;
-    if range == 0
-        % constant signal (e.g. all zeros) — pad by an absolute amount instead
-        pad = max(abs(hi), 1) * 0.1;
-    else
-        pad = range * pad_frac;
-    end
-    ylim([lo - pad, hi + pad]);
 end

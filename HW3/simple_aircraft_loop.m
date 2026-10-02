@@ -7,8 +7,12 @@ function dXdt = simple_aircraft_loop(t, X, u, system_params)
     m = system_params.m; % kg
     g = system_params.g; % m/s^2
 
+    prev_X0 = system_params.prev_X0;
+    offset_x = prev_X0(1);
+    offset_y = prev_X0(2);
+
     % system inputs
-    T = u(1); % thrust input
+    % T = u(1); % thrust input
     % a = u(2); % AoA input
 
     % system states
@@ -21,23 +25,23 @@ function dXdt = simple_aircraft_loop(t, X, u, system_params)
 
     R = 70; % m
     % angular position around the loop
-    theta_loop = atan2(y-R, x) + pi/2;
+    theta_loop = atan2(y - R - offset_y, x - offset_x) + pi/2;
     a = (2/(rho*kL*Aw)) * (m/R + (m*g*cos(theta_loop))/V^2);
 
     Cl = kL*a; % lift coefficient
-    Cd = kDO + kDI*a^2; % drag coefficient
+    % Cd = kDO + kDI*a^2; % drag coefficient
     
     % calculate x-accel
-    Tx = T*cos(a + theta_v);
+    % Tx = T*cos(a + theta_v);
     Lx = -0.5*rho*V^2*Cl*Aw*sin(theta_v);
-    Dx = -0.5*rho*V^2*Cd*Aw*cos(theta_v);
+    % Dx = -0.5*rho*V^2*Cd*Aw*cos(theta_v);
     % ddx = (1/m) * (Tx + Lx + Dx);
     ddx = Lx/m;
     
     % calculate y-accel
-    Ty = T*sin(a + theta_v);
+    % Ty = T*sin(a + theta_v);
     Ly = 0.5*rho*V^2*Cl*Aw*cos(theta_v);
-    Dy = -0.5*rho*V^2*Cd*Aw*sin(theta_v);
+    % Dy = -0.5*rho*V^2*Cd*Aw*sin(theta_v);
     Fg = -m*g;
     % ddy = (1/m) * (Ty + Ly + Dy + Fg);
     ddy = (1/m) *(Ly + Fg);

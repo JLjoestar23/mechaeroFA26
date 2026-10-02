@@ -44,17 +44,8 @@ X_total = [X1; X2; X3];
 plot_aircraft(t_total, X_total);
 
 % commanded AoA over time
-V = sqrt(X2(:,3).^2 + X2(:,4).^2);
-theta_loop = atan2(X2(:,4), X2(:,3));
+V = sqrt(X_total(:,3).^2 + X_total(:,4).^2);
+theta_loop = atan2(X_total(:,4), X_total(:,3));
 AoA = (2/(system_params.rho * system_params.kL * system_params.Aw)) * ...
-      (system_params.m/70 + (system_params.m*system_params.g*cos(theta_loop)) ./ V.^2);
+      (system_params.m/R + (system_params.m*system_params.g*cos(theta_loop)) ./ V.^2);
 
-AoA_complete = [2*ones(length(t1), 1); rad2deg(AoA); 2*ones(length(t3), 1)];
-
-figure('Color','w');
-plot(t_total, AoA_complete, 'LineWidth', 2);
-grid on; grid minor;
-set_ylim_padded(AoA_complete);
-xlabel('Time (s)');
-ylabel('Commanded AoA (deg)');
-title('Commanded AoA vs. Time');
